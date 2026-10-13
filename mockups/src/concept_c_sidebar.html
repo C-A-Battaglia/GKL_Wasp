@@ -1,0 +1,134 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Concept C</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{display:inline-block;background:#dfe4ea;font-family:Inter,sans-serif;color:#18202b;padding:28px 32px 32px}
+.board-title{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.board-title span{color:#2a6fdb}
+.board-sub{color:#5b6573;font-size:14px;margin:4px 0 18px;max-width:2400px}
+.row{display:flex;gap:28px}
+.cap{color:#5b6573;font-size:12px;font-weight:700;letter-spacing:1.5px;margin-bottom:8px}
+.screen{width:800px;height:480px;background:#eef1f5;border:1px solid #b9c2cd;overflow:hidden;display:flex;position:relative}
+.rail{width:92px;background:#18202b;display:flex;flex-direction:column;padding:8px 8px;gap:6px}
+.rail .logo{color:#fff;font-weight:800;font-size:15px;text-align:center;padding:6px 0 8px}
+.rail .logo b{color:#ff8a3d}
+.nav{height:62px;border-radius:10px;color:#8e9aab;font-size:10px;font-weight:800;letter-spacing:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.nav span{font-size:20px}
+.nav.on{background:#2a6fdb;color:#fff}
+.estop{margin-top:auto;height:86px;border-radius:10px;background:#d93636;color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.2;border:3px solid #ff9b9b}
+.main{flex:1;display:flex;flex-direction:column}
+.hdr{height:44px;display:flex;align-items:center;gap:8px;padding:0 12px;background:#fff;border-bottom:1px solid #d5dbe3}
+.pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;background:#eef1f5;display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%}
+.g{background:#1fae6a}.r{background:#d93636}.y{background:#f0a92e}
+.sp{flex:1}
+.btn{border-radius:8px;font-weight:800;display:flex;align-items:center;justify-content:center;text-align:center}
+.band{background:#fff;margin:8px 10px 0;border-radius:12px;padding:12px 12px;display:flex;flex-direction:column;gap:8px;border:1px solid #d5dbe3}
+.bh{display:flex;align-items:center;gap:8px}
+.bh h2{font-size:14px;letter-spacing:2px;font-weight:800}
+.st{font-size:10px;font-weight:800;padding:3px 9px;border-radius:10px;color:#fff}
+.ctl{display:flex;align-items:center;gap:5px}
+.n{width:54px;height:54px;background:#18202b;color:#fff;font-size:14px}
+.n.f{background:#3a4657;font-size:13px}
+.n.ff{background:#5a6677;font-size:12px}
+.val{width:190px;text-align:center}
+.val b{font-size:44px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.val u{text-decoration:none;font-size:13px;font-weight:700;color:#5b6573;margin-left:3px}
+.side{flex:1;display:flex;flex-direction:column;gap:5px;padding-left:8px;border-left:1px solid #e3e8ee;margin-left:4px}
+.kv{display:flex;align-items:center;gap:5px;font-size:12px}
+.kv i{font-style:normal;font-size:9px;font-weight:800;color:#5b6573;letter-spacing:1px;width:54px}
+.kv .pm{width:28px;height:26px;background:#e3e8ee;font-size:15px}
+.kv b{width:52px;text-align:center;font-size:15px}
+.act{display:flex;gap:6px;margin:auto 10px 10px;height:70px}
+.act .btn{font-size:13px;color:#fff;line-height:1.15}
+/* library */
+.lib{flex:1;display:flex;gap:10px;padding:10px}
+.list{width:250px;display:flex;flex-direction:column;gap:6px}
+.li{background:#fff;border:1px solid #d5dbe3;border-radius:10px;padding:9px 12px;font-weight:800;font-size:14px}
+.li small{display:block;font-weight:500;font-size:11px;color:#5b6573;margin-top:2px}
+.li.sel{border:2px solid #2a6fdb;background:#eaf1fd}
+.det{flex:1;background:#fff;border:1px solid #d5dbe3;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.f{background:#eef1f5;border-radius:8px;padding:7px 10px}
+.f i{display:block;font-style:normal;font-size:9px;font-weight:800;letter-spacing:1px;color:#5b6573}
+.f b{font-size:19px}.f u{text-decoration:none;font-size:11px;color:#5b6573}
+/* dialog */
+.dim{position:absolute;inset:0;background:rgba(15,20,28,.55);display:flex;align-items:flex-start;justify-content:center;padding-top:14px}
+.dlg{width:770px;background:#fff;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.inp{height:40px;border:2px solid #2a6fdb;border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:18px;font-weight:700}
+.kb{display:flex;flex-direction:column;gap:5px;background:#e3e8ee;border-radius:10px;padding:6px}
+.kr{display:flex;gap:5px;justify-content:center}
+.k{width:62px;height:42px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;box-shadow:0 1px 0 #b9c2cd}
+</style></head><body>
+<div class="board-title">Concept C <span>· Workstation (Side-rail navigation)</span></div>
+<div class="board-sub">Splits the app into pages — RUN, PROFILES, SETUP — so each page can be bigger and less cramped. A permanent STOP ALL on the rail is always one tap away. Both motors stacked as wide bands with −10 / −1 / −0.1 nudges. Includes the on-screen keyboard used to name a profile (applies to every concept).</div>
+<div class="row">
+<div>
+<div class="cap">1 · RUN PAGE</div>
+<div class="screen">
+ <div class="rail"><div class="logo">WASP<b>.</b></div><div class="nav on"><span>▶</span>RUN</div><div class="nav"><span>☰</span>PROFILES</div><div class="nav"><span>⚙</span>SETUP</div><div class="estop">STOP<br>ALL</div></div>
+ <div class="main">
+  <div class="hdr"><span style="font-size:10px;font-weight:800;color:#5b6573;letter-spacing:1px">PROFILE</span><b style="font-size:14px">6 mm · Stoneware</b><span class="pill" style="background:#fff3dc;color:#9a6200">● unsaved changes</span>
+   <div class="btn" style="background:#2a6fdb;color:#fff;font-size:11px;padding:7px 12px">SAVE</div><div class="sp"></div><div class="pill"><span class="dot g"></span>OmniCore HIGH</div></div>
+  <div class="band"><div class="bh"><h2>EXTRUDER</h2><div class="st" style="background:#1fae6a">EXTRUDING</div><span style="font-size:11px;color:#5b6573;font-weight:700">⏱ 4:12</span><div class="sp"></div><span style="font-size:10px;color:#8a96a6">0.075 rev/s · 311 steps/s</span></div>
+   <div class="ctl"><div class="btn n ff">−1</div><div class="btn n">−0.1</div><div class="val"><b>4.5</b><u>RPM</u></div><div class="btn n">+0.1</div><div class="btn n ff">+1</div>
+    <div class="side"><div class="kv"><i>RETRACT</i><div class="btn pm">−</div><b>0.40s</b><div class="btn pm">+</div></div><div class="kv"><i>PRIME</i><div class="btn pm">−</div><b>0.35s</b><div class="btn pm">+</div></div></div></div></div>
+  <div class="band"><div class="bh"><h2>FEEDER</h2><div class="st" style="background:#1fae6a">FEEDING</div><span style="font-size:11px;color:#1fae6a;font-weight:800">PI IN CONTROL</span><div class="sp"></div><span style="font-size:10px;color:#8a96a6">⚡ linked · 🔒 ratio locked</span></div>
+   <div class="ctl"><div class="btn n ff">−10</div><div class="btn n">−1</div><div class="val"><b>54</b><u>RPM</u></div><div class="btn n">+1</div><div class="btn n ff">+10</div>
+    <div class="side"><div class="kv"><i>RATIO</i><div class="btn pm">−</div><b>7.5×</b><div class="btn pm">+</div></div><div class="kv"><i></i><div class="btn" style="flex:1;height:26px;background:#1fae6a;color:#fff;font-size:10px">LINK</div><div class="btn" style="flex:1;height:26px;background:#1fae6a;color:#fff;font-size:10px">LOCK</div></div></div></div></div>
+  <div class="act">
+   <div class="btn" style="width:84px;background:#3a4657">MANUAL</div><div class="btn" style="width:84px;background:#c9d1db;color:#7a8696">START</div><div class="btn" style="width:118px;background:#d93636">OVERRIDE<br>STOP</div>
+   <div class="sp"></div>
+   <div class="btn" style="width:98px;background:#f0a92e;color:#18202b">RELEASE<br>FEEDER</div><div class="btn" style="width:84px;background:#1fae6a">FEEDING</div><div class="btn" style="width:84px;background:#d93636">STOP<br>FEED</div>
+  </div>
+ </div>
+</div></div>
+<div>
+<div class="cap">2 · PROFILES PAGE (opens first on launch)</div>
+<div class="screen">
+ <div class="rail"><div class="logo">WASP<b>.</b></div><div class="nav"><span>▶</span>RUN</div><div class="nav on"><span>☰</span>PROFILES</div><div class="nav"><span>⚙</span>SETUP</div><div class="estop">STOP<br>ALL</div></div>
+ <div class="main">
+  <div class="hdr"><b style="font-size:16px">Profiles</b><span style="font-size:11px;color:#5b6573">7 saved</span><div class="sp"></div><div class="btn" style="background:#18202b;color:#fff;font-size:11px;padding:7px 12px">＋ NEW FROM CURRENT</div></div>
+  <div class="lib">
+   <div class="list">
+    <div class="li" style="border-left:5px solid #ff8a3d">★ Lab Default<small>Default · loads on startup</small></div>
+    <div class="li sel">6 mm · Stoneware<small>Today 10:42</small></div>
+    <div class="li">4 mm · Porcelain fine<small>Oct 9</small></div>
+    <div class="li">8 mm · Terracotta coarse<small>Oct 2</small></div>
+    <div class="li">5 mm · Paper clay<small>Sep 28</small></div>
+    <div style="text-align:center;font-size:11px;color:#8a96a6">▼ 2 more</div>
+   </div>
+   <div class="det">
+    <div style="display:flex;align-items:center;gap:8px"><b style="font-size:19px">6 mm · Stoneware</b><div class="sp"></div><span style="font-size:11px;color:#5b6573">Nozzle 6 mm · Laguna B-Mix</span></div>
+    <div class="fg">
+     <div class="f"><i>EXTRUDER SPEED</i><b>4.5 <u>RPM</u></b></div><div class="f"><i>FEEDER SPEED</i><b>54 <u>RPM</u></b></div>
+     <div class="f"><i>RETRACT</i><b>0.40 <u>s</u></b></div><div class="f"><i>PRIME</i><b>0.35 <u>s</u></b></div>
+     <div class="f"><i>SPEED RATIO</i><b>7.5×</b></div><div class="f"><i>ON LOAD</i><b style="font-size:14px">Link ✓ · Ratio lock ✓</b></div>
+    </div>
+    <div style="font-size:11px;color:#5b6573;background:#eef1f5;border-radius:8px;padding:6px 10px">Notes: tested with 1.2 mm layer, robot TCP 40 mm/s. Good at wall corners.</div>
+    <div style="display:flex;gap:6px;margin-top:auto;height:52px">
+     <div class="btn" style="width:74px;background:#e3e8ee;font-size:11px">RENAME</div><div class="btn" style="width:74px;background:#e3e8ee;font-size:11px">DUPLICATE</div><div class="btn" style="width:64px;background:#e3e8ee;font-size:11px;color:#d93636">DELETE</div><div class="btn" style="width:74px;background:#e3e8ee;font-size:11px">MAKE<br>DEFAULT</div>
+     <div class="btn" style="flex:1;background:#2a6fdb;color:#fff;font-size:15px">LOAD ▶</div></div>
+   </div>
+  </div>
+ </div>
+</div></div>
+<div>
+<div class="cap">3 · SAVE AS NEW PROFILE (on-screen keyboard)</div>
+<div class="screen">
+ <div class="rail"><div class="logo">WASP<b>.</b></div><div class="nav on"><span>▶</span>RUN</div><div class="nav"><span>☰</span>PROFILES</div><div class="nav"><span>⚙</span>SETUP</div><div class="estop">STOP<br>ALL</div></div>
+ <div class="main"><div class="hdr"></div></div>
+ <div class="dim"><div class="dlg">
+  <div style="display:flex;align-items:center"><b style="font-size:16px">Save as new profile</b><div class="sp"></div><span style="font-size:11px;color:#5b6573">Ext 4.5 RPM · Feed 54 RPM · 7.5× · 0.40 / 0.35 s</span></div>
+  <div style="display:flex;gap:8px"><div class="inp" style="flex:1">6 mm · Stoneware v2<span style="width:2px;height:22px;background:#2a6fdb;margin-left:2px"></span></div><div class="inp" style="width:150px;border-color:#d5dbe3;font-size:14px;color:#5b6573">Nozzle: 6 mm ▾</div></div>
+  <div class="kb">
+   <div class="kr"><div class="k">1</div><div class="k">2</div><div class="k">3</div><div class="k">4</div><div class="k">5</div><div class="k">6</div><div class="k">7</div><div class="k">8</div><div class="k">9</div><div class="k">0</div><div class="k" style="width:80px;font-size:13px">⌫</div></div>
+   <div class="kr"><div class="k">Q</div><div class="k">W</div><div class="k">E</div><div class="k">R</div><div class="k">T</div><div class="k">Y</div><div class="k">U</div><div class="k">I</div><div class="k">O</div><div class="k">P</div><div class="k">.</div></div>
+   <div class="kr"><div class="k">A</div><div class="k">S</div><div class="k">D</div><div class="k">F</div><div class="k">G</div><div class="k">H</div><div class="k">J</div><div class="k">K</div><div class="k">L</div><div class="k">-</div></div>
+   <div class="kr"><div class="k" style="width:80px;font-size:12px">⇧ SHIFT</div><div class="k">Z</div><div class="k">X</div><div class="k">C</div><div class="k">V</div><div class="k">B</div><div class="k">N</div><div class="k">M</div><div class="k" style="width:200px;font-size:12px;color:#5b6573">SPACE</div></div>
+  </div>
+  <div style="display:flex;gap:8px;height:46px"><div class="btn" style="width:140px;background:#e3e8ee;font-size:13px">CANCEL</div><div class="btn" style="width:200px;background:#e3e8ee;font-size:12px">☐ Make this the default</div><div class="sp"></div><div class="btn" style="width:220px;background:#2a6fdb;color:#fff;font-size:15px">SAVE PROFILE</div></div>
+ </div></div>
+</div></div>
+</div>
+</body></html>
