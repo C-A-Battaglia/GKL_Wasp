@@ -6,6 +6,7 @@ redraws from Machine state every 100 ms. Switching theme destroys and
 rebuilds every widget (state lives in Machine / ProfileStore, so nothing is lost).
 """
 
+import threading
 import time
 import tkinter as tk
 
@@ -13,6 +14,7 @@ from .. import __version__
 from .. import config as C
 from ..motion import Extruder, Feeder, rpm_to_hz
 from ..profiles import MAX_NAME_LEN, same_settings
+from .. import updates as U
 from .theme import THEMES, font, pick_family
 from .widgets import Confirm, Keypad, Pill, TextForm, TouchButton, set_label, text_label
 
@@ -24,7 +26,7 @@ NUDGE_W, NUDGE_H = 58, 84
 
 
 class App:
-    def __init__(self, machine, store, settings, fullscreen=False):
+    def __init__(self, machine, store, settings, fullscreen=False, update_checker=None):
         self.m = machine
         self.ext = machine.extruder
         self.feed = machine.feeder
@@ -47,9 +49,14 @@ class App:
         self.list_offset = 0
         self.frame = None
         self._toast_job = None
+        self.update_checker = update_checker   # e.g. updates.check; None = off
+        self.update_info = None                # last result from the checker
+        self._update_announced = False
 
         self.build()
         self.root.after(POLL_MS, self.poll)
+        if update_checker:
+            self.root.after(3000, self._periodic_check)
 
     # ============================================================
     # BUILD
@@ -129,6 +136,10 @@ class App:
                             t["rail"], t["rail_fg"], size=13)
             b.pack(pady=3)
             self.nav[key] = b
+        # Dot on SETUP when a newer version is on GitHub.
+        self.update_badge = text_label(self.nav["setup"], "●", 16, t["green"], t["rail"])
+        self.update_badge.bind("<ButtonPress-1>", self.nav["setup"]._press)
+        self.update_badge.bind("<ButtonRelease-1>", self.nav["setup"]._release)
 
         TouchButton(rail, "STOP\nALL", self.stop_all, 82, 104, t["red"], "#ffffff",
                     size=17, fire_on_press=True).pack(side="bottom", pady=8)
@@ -404,6 +415,18 @@ class App:
             self.b_sim = self.btn(row, "", self.sim_toggle_signal, 230, 46, "yellow", 13)
             self.b_sim.pack(side="left", padx=6)
 
+        upd = self.card(page, fill="x", padx=8, pady=(8, 0))
+        top = tk.Frame(upd, bg=t["surface"])
+        top.pack(fill="x")
+        text_label(top, "SOFTWARE UPDATES", 10, t["muted"], t["surface"]).pack(side="left")
+        row = tk.Frame(upd, bg=t["surface"])
+        row.pack(fill="x", pady=(4, 0))
+        self.b_check = self.btn(row, "CHECK NOW", self.check_updates, 130, 40, size=12)
+        self.b_check.pack(side="right")
+        self.update_status = text_label(row, "", 12, t["text"], t["surface"], bold=False,
+                                        anchor="w", justify="left", wraplength=440)
+        self.update_status.pack(side="left", fill="x", expand=True)
+
         info = self.card(page, fill="both", expand=True, padx=8, pady=8)
         text_label(info, "UNITS & LIMITS", 10, t["muted"], t["surface"]).pack(anchor="w")
         lines = (
@@ -412,7 +435,6 @@ class App:
             f"{C.EXT_MIN_RPM:g}–{C.EXT_MAX_RPM:g} RPM  (old factor 0.20 = 12 RPM)",
             f"Feeder: {C.FEED_STEPS_PER_OUTPUT_REV:g} steps/rev  ·  "
             f"{C.FEED_MIN_RPM:g}–{C.FEED_MAX_RPM:g} RPM  (old factor 1.50 = 90 RPM)",
-            f"Ratio: feeder RPM change per 1 RPM extruder change (when locked)",
             f"Profiles: {self.store.path}",
         )
         for line in lines:
@@ -666,6 +688,7 @@ class App:
     def poll(self, schedule=True):
         try:
             self._update_run()
+            self._update_badge()
             if self.page == "setup":
                 self._update_setup()
         finally:
@@ -759,12 +782,79 @@ class App:
 
     def _update_setup(self):
         t = self.t
+        self._update_setup_status()
         self.b_full.set("FULLSCREEN: ON" if self.fullscreen else "FULLSCREEN: OFF")
         if self.m.simulated:
             on = self.ext.omnicore_signal
             self.b_sim.set(f"SIM OmniCore: {'HIGH' if on else 'LOW'}",
                            t["green"] if on else t["yellow"],
                            t["green_fg"] if on else t["yellow_fg"])
+
+    # ---- update check ----
+
+    def check_updates(self):
+        """Ask GitHub (on a thread) whether a newer version exists. Only
+        reports; installing is done with the Update WASP Control icon."""
+        if not self.update_checker:
+            return
+        if self.update_info and self.update_info["status"] == U.CHECKING:
+            return
+        self.update_info = {"status": U.CHECKING}
+
+        def work():
+            # Assigning one attribute is atomic; poll() picks it up.
+            self.update_info = self.update_checker()
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _periodic_check(self):
+        self.check_updates()
+        self.root.after(U.CHECK_EVERY_S * 1000, self._periodic_check)
+
+    def _update_label(self):
+        info = self.update_info
+        if not info:
+            return None
+        if info["status"] == U.AVAILABLE:
+            remote = info["remote_version"]
+            new = f"v{remote}" if remote and remote != __version__ else "Newer changes"
+            return f"{new} is available."
+        return None
+
+    def _update_badge(self):
+        available = self._update_label()
+        if available:
+            self.update_badge.configure(bg=self.nav["setup"].cget("bg"))
+            self.update_badge.place(relx=1.0, x=-6, y=2, anchor="ne")
+            if not self._update_announced:
+                self._update_announced = True
+                self.notify(f"{available} See Setup.")
+        else:
+            self.update_badge.place_forget()
+
+    def _update_setup_status(self):
+        t = self.t
+        info = self.update_info
+        status = info["status"] if info else None
+        when = ""
+        if info and info.get("checked"):
+            when = time.strftime("%H:%M", time.localtime(info["checked"]))
+        if not self.update_checker:
+            text, fg = "Update checks are off.", t["muted"]
+        elif status is None or status == U.CHECKING:
+            text, fg = "Checking GitHub for updates…", t["muted"]
+        elif status == U.AVAILABLE:
+            text = (f"{self._update_label()} Quit the app, then tap the "
+                    f"“Update WASP Control” icon on the desktop.")
+            fg = t["green"]
+        elif status == U.CURRENT:
+            text, fg = f"Up to date (v{__version__}). Checked {when}.", t["text"]
+        elif status == U.OFFLINE:
+            text, fg = f"Couldn't reach GitHub (no internet?). Tried {when}.", t["muted"]
+        else:
+            text, fg = "Not installed with git, so updates can't be checked.", t["muted"]
+        set_label(self.update_status, text=text, fg=fg)
+        self.b_check.set(enabled=bool(self.update_checker) and status != U.CHECKING)
 
     def run(self):
         self.root.mainloop()

@@ -24,6 +24,8 @@ def main():
     ap = argparse.ArgumentParser(description="WASP extruder + feeder controller")
     ap.add_argument("--sim", action="store_true", help="simulate GPIO (no hardware)")
     ap.add_argument("--fullscreen", action="store_true", help="start fullscreen")
+    ap.add_argument("--no-update-check", action="store_true",
+                    help="don't check GitHub for a newer version")
     ap.add_argument("--data-dir", default=os.path.expanduser("~/.wasp_control"),
                     help="where profiles.json and settings.json live")
     args = ap.parse_args()
@@ -40,8 +42,10 @@ def main():
     machine.start()
     print(f"Profiles: {store.path}  ({len(store.profiles)} saved)")
 
+    from wasp import updates
     from wasp.ui.app import App
-    app = App(machine, store, settings, fullscreen=args.fullscreen)
+    app = App(machine, store, settings, fullscreen=args.fullscreen,
+              update_checker=None if args.no_update_check else updates.check)
     try:
         app.run()
     except KeyboardInterrupt:

@@ -53,6 +53,13 @@ This puts two icons on the desktop and in the app menu:
   live in `~/.wasp_control/`. If the app is open, quit it and reopen it to
   use the new version.
 
+**Update notice:** the app checks GitHub a few seconds after it opens, and
+every 6 hours while it stays open. If a newer version is available, a green
+dot appears on SETUP and a message pops up once. The Setup page says what's
+available. The check never installs anything; the code only changes when you
+tap the Update icon. Start the app with `--no-update-check` to turn the check
+off.
+
 Add `--autostart` to the install command if the app should also start
 automatically when the Pi logs in.
 
@@ -82,6 +89,7 @@ xvfb-run python3 tools/screenshots.py      # regenerate docs/screens
 | `wasp/gpio.py` | lgpio wrapper and simulator |
 | `wasp/motion.py` | stepper, extruder state machine, feeder, STOP ALL |
 | `wasp/profiles.py` | profile and settings storage (JSON, crash-safe writes) |
+| `wasp/updates.py` | checks GitHub for a newer version (never installs) |
 | `wasp/ui/` | Tkinter GUI: theme, touch widgets, pages |
 | `tools/install_desktop.sh` | adds the desktop and menu icons |
 | `tools/update.sh` | updater run by the Update icon |
