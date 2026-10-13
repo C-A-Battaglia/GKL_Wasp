@@ -39,6 +39,7 @@ class App:
         self.root.attributes("-fullscreen", fullscreen)
         self.root.bind("<F11>", lambda _e: self.toggle_fullscreen())
         self.root.bind("<Escape>", lambda _e: self.toggle_fullscreen())
+        self.root.report_callback_exception = self.on_error
 
         self.page = "profiles"
         self.current = None                  # name of the loaded profile
@@ -176,7 +177,7 @@ class App:
         self.b_feedstart = self.btn(bar, "START\nFEED", self.feed_start_toggle, 100, 70, size=14)
         self.b_feedstart.pack(side="right", padx=6)
         self.b_control = self.btn(bar, "TAKE\nCONTROL", self.feeder_control_toggle, 112, 70,
-                                  "accent", 14)
+                                  "green", 14)
         self.b_control.pack(side="right")
 
         self._build_ext_band(page)
@@ -436,8 +437,10 @@ class App:
     def feeder_control_toggle(self):
         if self.feed.pi_has_control:
             self.feed.release_control()
+            self.notify("Feeder released: front panel in control")
         else:
             self.feed.take_control()
+            self.notify("Feeder taken over: Pi in control")
 
     def link_toggle(self):
         self.feed.set_linked(not self.feed.linked)
@@ -473,13 +476,21 @@ class App:
                 "Both motors stop and the feeder relay returns control to the front panel.",
                 "QUIT", self.root.destroy, danger=True)
 
-    def notify(self, text):
-        self.toast.configure(text=text)
+    def on_error(self, exc_type, exc, tb):
+        """Button handler crashed: show it on screen, not just in a terminal."""
+        import traceback
+        traceback.print_exception(exc_type, exc, tb)
+        self.notify(f"Error: {exc}"[:70], error=True)
+
+    def notify(self, text, error=False):
+        t = self.t
+        self.toast.configure(text=text, bg=t["red"] if error else t["accent"],
+                             fg=t["red_fg"] if error else t["accent_fg"])
         self.toast.place(relx=0.5, rely=1.0, y=-96, anchor="s")
         self.toast.lift()
         if self._toast_job:
             self.root.after_cancel(self._toast_job)
-        self._toast_job = self.root.after(2500, self.toast.place_forget)
+        self._toast_job = self.root.after(6000 if error else 2500, self.toast.place_forget)
 
     # ---- profiles ----
 
@@ -719,7 +730,7 @@ class App:
             self.b_control.set("RELEASE\nFEEDER", t["yellow"], t["yellow_fg"])
         else:
             set_label(self.feed_ctrl, text="FRONT PANEL", fg=t["muted"])
-            self.b_control.set("TAKE\nCONTROL", t["accent"], t["accent_fg"])
+            self.b_control.set("TAKE\nCONTROL", t["green"], t["green_fg"])
         set_label(self.feed_val, text=f"{feed.rpm:.1f}")
         hz = rpm_to_hz(feed.rpm, C.FEED_STEPS_PER_OUTPUT_REV)
         set_label(self.feed_detail, text=f"{feed.rpm / 60:.3f} rev/s · {hz:.0f} steps/s")

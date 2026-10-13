@@ -62,6 +62,10 @@ class SimBackend:
 
     def pwm(self, pin, freq_hz, duty_pct):
         with self._lock:
+            if not freq_hz and not self.pwm_hz.get(pin):
+                # Real lgpio refuses to cancel PWM that isn't running
+                # (LG_BAD_PWM_MICROS); mirror that so tests catch it.
+                raise RuntimeError("bad PWM micros (no PWM active on this GPIO)")
             self.pwm_hz[pin] = freq_hz if duty_pct else 0
 
     def close(self):

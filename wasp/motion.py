@@ -39,7 +39,14 @@ class Stepper:
         self.running = True
 
     def stop(self):
-        self.gpio.pwm(self.step_pin, 0, 0)
+        """Safe to call when already stopped. lgpio raises if asked to cancel
+        PWM that isn't running, which used to abort RELEASE FEEDER, STOP ALL
+        and shutdown part-way through when the motor was idle."""
+        try:
+            self.gpio.pwm(self.step_pin, 0, 0)
+        except Exception:
+            if self.running:
+                raise           # a real failure to stop a moving motor
         self.gpio.write(self.step_pin, 0)
         self.running = False
 
