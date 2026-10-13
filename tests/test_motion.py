@@ -107,3 +107,29 @@ def test_apply_profile_and_snapshot(rig):
     assert snap["ext_rpm"] == 2.4 and snap["feed_rpm"] == 30 and snap["link"] and snap["ratio_lock"]
     m.apply_profile(dict(p, link=False), links=False)
     assert m.feeder.linked                               # links=False leaves them alone
+
+
+def test_release_without_feeding_returns_control(rig):
+    m, gpio = rig
+    m.feeder.take_control()
+    m.feeder.release_control()            # feeder motor never started
+    assert not m.feeder.pi_has_control
+    assert m.feeder.state == Feeder.IDLE
+    assert gpio.levels[C.FEED_RELAY_PIN] == 0
+
+
+def test_stop_when_idle_is_harmless(rig):
+    m, gpio = rig
+    m.feeder.take_control()
+    m.feeder.stop_feeding()
+    m.stop_all()
+    assert m.feeder.pi_has_control and not m.feeder.feeding
+
+
+def test_shutdown_hands_feeder_back_to_front_panel():
+    gpio = SimBackend()
+    m = Machine(gpio)
+    m.start()
+    m.feeder.take_control()
+    m.shutdown()
+    assert gpio.levels[C.FEED_RELAY_PIN] == 0

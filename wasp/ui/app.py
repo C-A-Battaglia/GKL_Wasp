@@ -39,6 +39,7 @@ class App:
         self.root.attributes("-fullscreen", fullscreen)
         self.root.bind("<F11>", lambda _e: self.toggle_fullscreen())
         self.root.bind("<Escape>", lambda _e: self.toggle_fullscreen())
+        self.root.report_callback_exception = self.on_error
 
         self.page = "profiles"
         self.current = None                  # name of the loaded profile
@@ -475,13 +476,21 @@ class App:
                 "Both motors stop and the feeder relay returns control to the front panel.",
                 "QUIT", self.root.destroy, danger=True)
 
-    def notify(self, text):
-        self.toast.configure(text=text)
+    def on_error(self, exc_type, exc, tb):
+        """Button handler crashed: show it on screen, not just in a terminal."""
+        import traceback
+        traceback.print_exception(exc_type, exc, tb)
+        self.notify(f"Error: {exc}"[:70], error=True)
+
+    def notify(self, text, error=False):
+        t = self.t
+        self.toast.configure(text=text, bg=t["red"] if error else t["accent"],
+                             fg=t["red_fg"] if error else t["accent_fg"])
         self.toast.place(relx=0.5, rely=1.0, y=-96, anchor="s")
         self.toast.lift()
         if self._toast_job:
             self.root.after_cancel(self._toast_job)
-        self._toast_job = self.root.after(2500, self.toast.place_forget)
+        self._toast_job = self.root.after(6000 if error else 2500, self.toast.place_forget)
 
     # ---- profiles ----
 
