@@ -1,0 +1,124 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Concept B</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{display:inline-block;background:#e9e6e1;font-family:Inter,sans-serif;color:#1a1a1a;padding:28px 32px 32px}
+.board-title{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.board-title span{color:#e1622f}
+.board-sub{color:#6b6660;font-size:14px;margin:4px 0 18px}
+.row{display:flex;gap:28px}
+.cap{color:#6b6660;font-size:12px;font-weight:700;letter-spacing:1.5px;margin-bottom:8px}
+.screen{width:800px;height:480px;background:#f6f5f2;border:1px solid #cfcac3;overflow:hidden;display:flex;flex-direction:column}
+.top{height:46px;background:#1a1a1a;color:#fff;display:flex;align-items:center;padding:0 14px;gap:10px}
+.logo{font-weight:800;font-size:18px}.logo b{color:#e1622f}
+.acc{width:26px;height:3px;background:#e1622f;margin-top:10px}
+.pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;background:#2d2d2d;color:#fff;display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%}
+.g{background:#00b894}.r{background:#d63031}.y{background:#fdcb6e}
+.sp{flex:1}
+.btn{border-radius:10px;font-weight:800;display:flex;align-items:center;justify-content:center;text-align:center}
+/* picker */
+.grid{flex:1;padding:12px;display:grid;grid-template-columns:1.25fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:10px}
+.tile{background:#fff;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;box-shadow:0 1px 0 #d9d4cc}
+.tile.def{grid-row:span 2;background:#1a1a1a;color:#fff}
+.tile .tag{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#e1622f}
+.tile h3{font-size:17px;font-weight:800;margin:3px 0 2px}
+.tile .meta{font-size:11px;color:#8b857e}
+.tile.def .meta{color:#aaa}
+.stats{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+.stats i{display:block;font-style:normal;font-size:9px;font-weight:800;letter-spacing:1px;color:#8b857e}
+.stats b{font-size:16px}.stats u{text-decoration:none;font-size:10px;color:#8b857e;font-weight:600}
+.tile.def .stats b{font-size:24px}
+.tile.new{background:transparent;border:2px dashed #c4beb6;box-shadow:none;align-items:center;justify-content:center;color:#8b857e;font-weight:800;font-size:14px}
+.foot{height:68px;display:flex;gap:10px;padding:0 12px 12px}
+/* dashboard */
+.prof{height:40px;background:#fff;border-bottom:1px solid #e2ded8;display:flex;align-items:center;gap:8px;padding:0 12px}
+.prof .nm{font-weight:800;font-size:14px}
+.chip{font-size:10px;font-weight:800;padding:3px 8px;border-radius:10px}
+.cols{flex:1;display:flex;gap:10px;padding:10px 12px}
+.card{flex:1;background:#fff;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:9px;box-shadow:0 1px 0 #d9d4cc}
+.hd{display:flex;align-items:center;gap:8px}
+.hd h2{font-size:14px;font-weight:800;letter-spacing:2px}
+.st{font-size:10px;font-weight:800;padding:3px 9px;border-radius:10px;color:#fff}
+.big{display:flex;align-items:stretch;gap:6px}
+.nud{display:flex;flex-direction:column;gap:4px}
+.nud .btn{width:52px;flex:1;background:#1a1a1a;color:#fff;font-size:13px;border-radius:8px}
+.nud .btn.s{background:#3a3a3a;font-size:11px}
+.val{flex:1;text-align:center;background:#f3f1ed;border-radius:10px;padding:6px 0}
+.val b{font-size:46px;font-weight:800;letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
+.val u{text-decoration:none;font-size:13px;color:#8b857e;font-weight:700;margin-left:3px}
+.val small{display:block;color:#8b857e;font-size:10px;font-weight:600}
+.sm{display:flex;gap:6px}
+.sbox{flex:1;border:1px solid #e2ded8;border-radius:8px;padding:6px 8px}
+.sbox i{display:block;font-style:normal;font-size:9px;font-weight:800;color:#8b857e;letter-spacing:1px}
+.sbox .l{display:flex;align-items:center;gap:6px;margin-top:3px}
+.sbox .pm{width:30px;height:28px;background:#1a1a1a;color:#fff;font-size:16px;border-radius:6px}
+.sbox b{flex:1;text-align:center;font-size:16px}
+.bar{height:80px;background:#1a1a1a;display:flex;gap:8px;padding:10px 12px;border-top:4px solid #e1622f}
+.bar .btn{font-size:13px;line-height:1.15;color:#fff}
+</style></head><body>
+<div class="board-title">Concept B <span>· CraftLab Refined (Light, evolution of current)</span></div>
+<div class="board-sub">Keeps today's Impact-inspired look (light canvas, black controls, orange accent) so the lab learns nothing new — but cleaner cards, rounded tiles, and coarse + fine nudge buttons instead of a step selector.</div>
+<div class="row">
+<div>
+<div class="cap">1 · STARTUP — SELECT PROFILE</div>
+<div class="screen">
+ <div class="top"><div class="logo">WASP Control<b>.</b></div><div class="acc"></div><div class="sp"></div><div class="pill"><span class="dot r"></span>OmniCore: LOW</div></div>
+ <div style="padding:12px 14px 0;display:flex;align-items:baseline;gap:10px"><div style="font-size:20px;font-weight:800">Choose a profile</div><div style="font-size:12px;color:#8b857e">Tap a tile, then Load. Long-press to edit.</div></div>
+ <div class="grid">
+  <div class="tile def" style="border:3px solid #e1622f"><div class="tag">★ DEFAULT</div><h3>Lab Default</h3><div class="meta">Safe starting point for any nozzle</div>
+   <div class="stats"><div><i>EXTRUDER</i><b>12.0 <u>RPM</u></b></div><div><i>FEEDER</i><b>90 <u>RPM</u></b></div><div><i>RATIO</i><b>1.0×</b></div><div><i>RET / PRIME</i><b>0.50<u>s</u></b></div></div></div>
+  <div class="tile"><div class="tag">NOZZLE 6 mm</div><h3>Stoneware</h3><div class="meta">Used today 10:42</div>
+   <div class="stats"><div><i>EXT</i><b>4.5 <u>RPM</u></b></div><div><i>FEED</i><b>54 <u>RPM</u></b></div></div></div>
+  <div class="tile"><div class="tag">NOZZLE 4 mm</div><h3>Porcelain fine</h3><div class="meta">Used Oct 9</div>
+   <div class="stats"><div><i>EXT</i><b>2.4 <u>RPM</u></b></div><div><i>FEED</i><b>30 <u>RPM</u></b></div></div></div>
+  <div class="tile"><div class="tag">NOZZLE 8 mm</div><h3>Terracotta coarse</h3><div class="meta">Used Oct 2</div>
+   <div class="stats"><div><i>EXT</i><b>18.0 <u>RPM</u></b></div><div><i>FEED</i><b>120 <u>RPM</u></b></div></div></div>
+  <div class="tile new">＋ NEW PROFILE</div>
+ </div>
+ <div class="foot">
+  <div class="btn" style="width:150px;background:#fff;box-shadow:0 1px 0 #d9d4cc;font-size:13px">‹ ›  MORE (2/2)</div>
+  <div class="btn" style="width:150px;background:#fff;box-shadow:0 1px 0 #d9d4cc;font-size:13px">MANAGE…</div>
+  <div class="btn" style="flex:1;background:#e1622f;color:#fff;font-size:18px">LOAD LAB DEFAULT  →</div>
+ </div>
+</div></div>
+<div>
+<div class="cap">2 · RUN DASHBOARD</div>
+<div class="screen">
+ <div class="top"><div class="logo">WASP Control<b>.</b></div><div class="acc"></div><div class="sp"></div><div class="pill" style="background:#0f3d33"><span class="dot g"></span>OmniCore: HIGH</div></div>
+ <div class="prof"><span style="font-size:10px;font-weight:800;color:#8b857e;letter-spacing:1px">PROFILE</span><span class="nm">6 mm · Stoneware</span><span class="chip" style="background:#fff2d6;color:#a06a00">EDITED</span><div class="sp"></div>
+  <div class="btn" style="background:#f3f1ed;font-size:11px;padding:7px 12px;border-radius:8px">SWITCH</div>
+  <div class="btn" style="background:#f3f1ed;font-size:11px;padding:7px 12px;border-radius:8px">SAVE AS NEW</div>
+  <div class="btn" style="background:#e1622f;color:#fff;font-size:11px;padding:7px 12px;border-radius:8px">SAVE</div></div>
+ <div class="cols">
+  <div class="card">
+   <div class="hd"><h2>EXTRUDER</h2><div class="st" style="background:#00b894">EXTRUDING</div><div class="sp"></div><span style="font-size:11px;color:#8b857e;font-weight:700">⏱ 4:12</span></div>
+   <div class="big"><div class="nud"><div class="btn">−1</div><div class="btn s">−0.1</div></div>
+    <div class="val"><b>4.5</b><u>RPM</u><small>output shaft · 311 steps/s</small></div>
+    <div class="nud"><div class="btn">+1</div><div class="btn s">+0.1</div></div></div>
+   <div class="sm"><div class="sbox"><i>RETRACT</i><div class="l"><div class="btn pm">−</div><b>0.40s</b><div class="btn pm">+</div></div></div>
+    <div class="sbox"><i>PRIME</i><div class="l"><div class="btn pm">−</div><b>0.35s</b><div class="btn pm">+</div></div></div></div>
+   <div style="margin-top:auto;display:flex;justify-content:space-between;font-size:10px;color:#8b857e;font-weight:600"><span>Range 0.1 – 180 RPM</span><span style="font-weight:800">RESET TIMER</span></div>
+  </div>
+  <div class="card">
+   <div class="hd"><h2>FEEDER</h2><div class="st" style="background:#00b894">FEEDING</div><div class="sp"></div><span style="font-size:11px;color:#00b894;font-weight:800">● PI CONTROL</span></div>
+   <div class="big"><div class="nud"><div class="btn">−10</div><div class="btn s">−1</div></div>
+    <div class="val"><b>54</b><u>RPM</u><small>auger · 720 steps/s</small></div>
+    <div class="nud"><div class="btn">+10</div><div class="btn s">+1</div></div></div>
+   <div class="sm"><div class="sbox"><i>RATIO (FEED Δ / EXT Δ)</i><div class="l"><div class="btn pm">−</div><b>7.5×</b><div class="btn pm">+</div></div></div>
+    <div class="sbox" style="display:flex;gap:5px;padding:5px"><div class="btn" style="flex:1;background:#00b894;color:#fff;font-size:11px;border-radius:6px">LINKED ✓</div><div class="btn" style="flex:1;background:#00b894;color:#fff;font-size:11px;border-radius:6px">LOCKED ✓</div></div></div>
+   <div style="margin-top:auto;font-size:10px;color:#8b857e;font-weight:600">Locked: every +1 RPM on the extruder adds +7.5 RPM to the feeder</div>
+  </div>
+ </div>
+ <div class="bar">
+  <div class="btn" style="width:96px;background:#2d2d2d">MANUAL<br>OVERRIDE</div>
+  <div class="btn" style="width:96px;background:#2d2d2d;color:#666">START</div>
+  <div class="btn" style="width:140px;background:#d63031;font-size:14px">OVERRIDE<br>STOP</div>
+  <div class="sp"></div>
+  <div class="btn" style="width:104px;background:#fdcb6e;color:#1a1a1a">RELEASE<br>CONTROL</div>
+  <div class="btn" style="width:96px;background:#00b894">FEEDING</div>
+  <div class="btn" style="width:120px;background:#d63031">STOP<br>FEED</div>
+ </div>
+</div></div>
+</div>
+</body></html>
