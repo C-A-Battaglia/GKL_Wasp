@@ -29,33 +29,34 @@ signal. CraftLab, University of Houston.
   - Stops and unlinks the feeder. The Pi keeps the relay so the front panel
     can't restart the feeder.
 - **Dark / light theme:** switch on the Setup page. The choice is remembered.
-- **Feeder takeover:** TAKE CONTROL switches the relay from the feeder's front
-  panel to the Pi. LINK makes the feeder run whenever the extruder runs.
+- **Feeder takeover:** TAKE CONTROL (green) switches the relay from the
+  feeder's front panel to the Pi. RELEASE FEEDER (amber) hands control back.
+  A message confirms each switch. LINK makes the feeder run whenever the
+  extruder runs.
   RATIO LOCK makes the feeder follow extruder speed changes (feeder change =
   extruder change × ratio).
 
 ## Install on the Pi (Raspberry Pi OS Bookworm)
 
+The Pi needs Wi-Fi. `python3-tk` and `python3-lgpio` come with Raspberry Pi OS.
+
 ```bash
-sudo apt install python3-tk python3-lgpio
-git clone https://github.com/C-A-Battaglia/GKL_Wasp.git
-cd GKL_Wasp
-python3 wasp_control.py --fullscreen
+git clone https://github.com/C-A-Battaglia/GKL_Wasp.git ~/GKL_Wasp
+bash ~/GKL_Wasp/tools/install_desktop.sh
 ```
 
-Esc or F11 toggles fullscreen. Profiles and settings are saved in
-`~/.wasp_control/` (`profiles.json`, `settings.json`).
+This puts two icons on the desktop and in the app menu:
 
-### Start automatically on boot
+- **WASP Control** opens the app fullscreen. Esc or F11 toggles fullscreen.
+- **Update WASP Control** downloads the latest version from GitHub, shows
+  what changed, and refreshes the icons. Your profiles are not touched; they
+  live in `~/.wasp_control/`. If the app is open, quit it and reopen it to
+  use the new version.
 
-Create `~/.config/autostart/wasp.desktop`:
+Add `--autostart` to the install command if the app should also start
+automatically when the Pi logs in.
 
-```ini
-[Desktop Entry]
-Type=Application
-Name=WASP Control
-Exec=python3 /home/pi/GKL_Wasp/wasp_control.py --fullscreen
-```
+You can also run the app from a terminal: `python3 ~/GKL_Wasp/wasp_control.py --fullscreen`.
 
 ## Testing without hardware
 
@@ -82,6 +83,9 @@ xvfb-run python3 tools/screenshots.py      # regenerate docs/screens
 | `wasp/motion.py` | stepper, extruder state machine, feeder, STOP ALL |
 | `wasp/profiles.py` | profile and settings storage (JSON, crash-safe writes) |
 | `wasp/ui/` | Tkinter GUI: theme, touch widgets, pages |
+| `tools/install_desktop.sh` | adds the desktop and menu icons |
+| `tools/update.sh` | updater run by the Update icon |
+| `assets/` | icon images |
 | `legacy/WASP3326.py` | the previous single-file version, kept for reference |
 | `mockups/` | design concepts A/B/C |
 

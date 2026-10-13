@@ -176,7 +176,7 @@ class App:
         self.b_feedstart = self.btn(bar, "START\nFEED", self.feed_start_toggle, 100, 70, size=14)
         self.b_feedstart.pack(side="right", padx=6)
         self.b_control = self.btn(bar, "TAKE\nCONTROL", self.feeder_control_toggle, 112, 70,
-                                  "accent", 14)
+                                  "green", 14)
         self.b_control.pack(side="right")
 
         self._build_ext_band(page)
@@ -436,8 +436,10 @@ class App:
     def feeder_control_toggle(self):
         if self.feed.pi_has_control:
             self.feed.release_control()
+            self.notify("Feeder released: front panel in control")
         else:
             self.feed.take_control()
+            self.notify("Feeder taken over: Pi in control")
 
     def link_toggle(self):
         self.feed.set_linked(not self.feed.linked)
@@ -719,7 +721,7 @@ class App:
             self.b_control.set("RELEASE\nFEEDER", t["yellow"], t["yellow_fg"])
         else:
             set_label(self.feed_ctrl, text="FRONT PANEL", fg=t["muted"])
-            self.b_control.set("TAKE\nCONTROL", t["accent"], t["accent_fg"])
+            self.b_control.set("TAKE\nCONTROL", t["green"], t["green_fg"])
         set_label(self.feed_val, text=f"{feed.rpm:.1f}")
         hz = rpm_to_hz(feed.rpm, C.FEED_STEPS_PER_OUTPUT_REV)
         set_label(self.feed_detail, text=f"{feed.rpm / 60:.3f} rev/s · {hz:.0f} steps/s")
