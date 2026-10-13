@@ -70,3 +70,36 @@ def test_profile_workflow(tmp_path):
     finally:
         app.root.destroy()
         m.shutdown()
+
+
+def test_update_notice(tmp_path):
+    import time
+    from wasp import updates as U
+    from wasp.gpio import SimBackend
+    from wasp.motion import Machine
+    from wasp.profiles import ProfileStore, Settings
+    from wasp.ui.app import App
+
+    result = {"status": U.AVAILABLE, "behind": 3, "remote_version": "9.9.9", "checked": time.time()}
+    m = Machine(SimBackend())
+    app = App(m, ProfileStore(str(tmp_path)), Settings(str(tmp_path)), update_checker=lambda: result)
+    try:
+        app.check_updates()
+        for _ in range(50):
+            if app.update_info is result:
+                break
+            time.sleep(0.02)
+        app.poll(schedule=False)
+        assert app.update_badge.winfo_manager() == "place"
+        assert "v9.9.9 is available" in app.toast.cget("text")
+        app.show("setup")
+        app.poll(schedule=False)
+        assert "Update WASP Control" in app.update_status.cget("text")
+
+        result.update(status=U.CURRENT, behind=0)
+        app.poll(schedule=False)
+        assert app.update_badge.winfo_manager() == ""
+        assert app.update_status.cget("text").startswith("Up to date")
+    finally:
+        app.root.destroy()
+        m.shutdown()

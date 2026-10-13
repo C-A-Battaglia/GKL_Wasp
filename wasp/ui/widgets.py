@@ -107,7 +107,7 @@ class TouchButton(tk.Frame):
         self._paint()
         if was_pressed and not (self.repeat or self.fire_on_press):
             under = self.winfo_containing(event.x_root, event.y_root)
-            if under in (self, self.label):
+            if under is not None and (under is self or under.master is self):
                 self._fire()
 
 
